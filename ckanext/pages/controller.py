@@ -290,7 +290,7 @@ class PagesController(p.toolkit.BaseController):
         )
 
         if page_type == 'blog':
-            return p.toolkit.abort(404) 
+            return p.toolkit.render('ckanext_pages/blog_list.html')
         return p.toolkit.render('ckanext_pages/pages_list.html')
 
     def blog_delete(self, page):
