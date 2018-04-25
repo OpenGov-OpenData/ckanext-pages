@@ -2,6 +2,21 @@
 
 {% block subtitle %}{{ c.page.title }}{% endblock %}
 
+{% block toolbar %}
+{% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action=action, id=id, page='/' + c.page.name) %}
+  <div class="toolbar">
+    {% block breadcrumb %}
+      <ol class="breadcrumb">
+        <li class="home"><a href="{{ h.url_for('home') }}">Home</a></li>
+        <li><a href="{{ h.url_for('pages_index') }}">Info</a></li>
+        {% block breadcrumb_content %}
+          <li class="active"><a class="active" href="{{url}}">{{ c.page.title }}</a></li>
+        {% endblock %}
+      </ol>
+    {% endblock %}
+  </div>
+{% endblock %}
+
 {% block primary %}
   <section class="module-content">
     {% if h.check_access('ckanext_pages_update') %}

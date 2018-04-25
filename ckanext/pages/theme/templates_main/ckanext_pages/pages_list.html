@@ -7,13 +7,23 @@
 {% endblock %}
 
 {% block primary_content_inner %}
-  <h1 class="hide-heading">{{ _('Pages') }}</h1>
+  <h1 class="hide-heading">{{ _('Info') }}</h1>
   {% snippet 'ckanext_pages/snippets/pages_list.html', pages=c.page.items %}
   {{ c.page.pager() }}
 {% endblock %}
 
 {% block main_content %}
-   <div class="wrapper no-nav">
-     {{ self.primary_content() }}
-   </div>
+  {% block toolbar %}
+    <div class="toolbar">
+      {% block breadcrumb %}
+        <ol class="breadcrumb">
+          <li class="home"><a href="{{ h.url_for('home') }}">Home</a></li>
+          <li><a href="{{ h.url_for('pages_index') }}">Info</a></li>
+        </ol>
+      {% endblock %}
+    </div>
+  {% endblock %}
+  <div class="wrapper no-nav">
+    {{ self.primary_content() }}
+  </div>
 {% endblock %}

@@ -12,12 +12,18 @@
 {% if type == 'blog' %}
   <h2>Blog</h2>
 {% else %}
- <h2>Pages</h2>
+ <h2>Info</h2>
 {% endif %}
 
 {% if pages %}
   {% set editor = h.get_wysiwyg_editor() %}
-
+  <div class="heading-explanation">
+    <p>
+      This page catalogs additional information to provide users with references and cues to use the City’s new open data platform.
+      We will continue to add to this repository over time.
+      Start by checking out the following: 
+    </p>
+  </div>
     {% for page in pages %}
       {% if id %} {# this is for orgs and groups #}
         {% set url = h.url_for(controller='ckanext.pages.controller:PagesController', action=action, id=id, page='/' + page.name) %}
