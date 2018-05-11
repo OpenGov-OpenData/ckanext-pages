@@ -6,6 +6,6 @@ CKEDITOR.plugins.setLang( 'ckanview', 'en-gb', {
 	border: 'Show frame border',
 	noUrl: 'Please type the ckan view URL',
 	scrolling: 'Enable scrollbars',
-	title: 'View Properties',
-	toolbar: 'View'
+	title: 'IFrame Properties',
+	toolbar: 'IFrame'
 } );
