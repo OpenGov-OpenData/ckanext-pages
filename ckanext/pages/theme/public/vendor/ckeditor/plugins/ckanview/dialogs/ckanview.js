@@ -71,7 +71,7 @@
 
 
 				this.commitContent( iframeNode, extraStyles, extraAttributes );
-        iframeNode.setAttributes({'data-ckan-view-embed': 'true'});
+        //iframeNode.setAttributes({'data-ckan-view-embed': 'true'});
 
 
 				// Refresh the fake image.
