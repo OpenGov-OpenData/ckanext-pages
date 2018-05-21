@@ -31,12 +31,12 @@ msgstr ""
 #: ckanext/pages/actions.py:280 ckanext/pages/actions.py:288
 #: ckanext/pages/actions.py:296
 msgid "Not authorized to see this page"
-msgstr "No autorizado para ver esta página"
+msgstr "No autorizado a ver esta página."
 
 #: ckanext/pages/auth.py:52
 #, python-format
 msgid "User %s not authorized to read this page"
-msgstr "Usuario %s no autorizado para leer esta página"
+msgstr "Usario %s no autorizado a leer esta página."
 
 #: ckanext/pages/controller.py:22
 msgid "Organization not found"
@@ -45,7 +45,7 @@ msgstr "Organización no encontrada"
 #: ckanext/pages/controller.py:24
 #, python-format
 msgid "Unauthorized to read organization %s"
-msgstr "Organización no autorizada para leer %s"
+msgstr "No autorizado a leer esta organización %s"
 
 #: ckanext/pages/controller.py:64 ckanext/pages/controller.py:309
 msgid "Page Not Found"
@@ -63,7 +63,7 @@ msgstr "Grupo no encontrado"
 #: ckanext/pages/controller.py:125
 #, python-format
 msgid "Unauthorized to read group %s"
-msgstr "Grupo no autorizado para leer %s"
+msgstr "No autorizado a leer grupo %s"
 
 #: ckanext/pages/controller.py:240
 msgid "ERROR: View not found {view_id}"
@@ -75,16 +75,16 @@ msgstr "Su navegador no soporta iframes."
 
 #: ckanext/pages/controller.py:354
 msgid "Unauthorized to create or edit a page"
-msgstr "No autorizado para crear o editar una página"
+msgstr "No autorizado a crear o editar una página."
 
 #: ckanext/pages/controller.py:373
 msgid "Only Posting is availiable"
-msgstr "Solo publicaciones está disponible"
+msgstr "Solo publicaciones están disponible."
 
 #: ckanext/pages/controller.py:378
 #, python-format
 msgid "Unauthorized to upload file %s"
-msgstr "No autorizado para subir archivo %s"
+msgstr "No autorizado a subir archivo %s"
 
 #: ckanext/pages/theme/templates_group/group/read_base.html:5
 #: ckanext/pages/theme/templates_main/ckanext_pages/edit_base.html:3
@@ -117,7 +117,7 @@ msgstr "¿Qué son páginas?"
 msgid ""
 " <p>Pages are are simple way to add extra pages to your ckan instance. "
 "You can assign an order to them.</p> "
-msgstr ""
+msgstr "<p>Páginas es una forma de añadir adicional páginas a tu instancia de CKAN.</p>"
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/base_form.html:40
 msgid "Add Blog Article"
@@ -182,7 +182,7 @@ msgstr "Orden de menú"
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/base_form.html:88
 msgid "Not in Menu"
-msgstr "No en el Menú"
+msgstr "No está en el Menú."
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/base_form.html:98
 #: ckanext/pages/theme/templates_main/ckanext_pages/base_form.html:102
@@ -261,7 +261,7 @@ msgstr "Confirmar eliminación"
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/confirm_delete.html:11
 msgid "Are you sure you want to delete page - {name}?"
-msgstr "¿Seguro que quieres eliminar la página - {name}?"
+msgstr "¿Estás seguro de que quieres eliminar la página - {name}?"
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/pages_edit.html:3
 msgid "Edit Page"
