@@ -21,7 +21,7 @@ msgstr ""
 
 #: ckanext/pages/actions.py:28
 msgid "Page name already exists in database"
-msgstr ""
+msgstr "El nombre de la página actualmente existe en la base de datos."
 
 #: ckanext/pages/actions.py:185 ckanext/pages/actions.py:208
 #: ckanext/pages/actions.py:216 ckanext/pages/actions.py:224
@@ -115,7 +115,7 @@ msgstr "¿Qué son páginas?"
 
 #: ckanext/pages/theme/templates_main/ckanext_pages/base.html:18
 msgid ""
-" <p>Pages are are simple way to add extra pages to your ckan instance. "
+" <p>Pages are a simple way to add extra pages to your ckan instance. "
 "You can assign an order to them.</p> "
 msgstr "<p>Páginas es una forma de añadir adicional páginas a tu instancia de CKAN.</p>"
 
