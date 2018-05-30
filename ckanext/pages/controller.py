@@ -378,6 +378,11 @@ class PagesController(p.toolkit.BaseController):
         error_summary = error_summary or {}
 
         form_snippet = config.get('ckanext.pages.form', 'ckanext_pages/base_form.html')
+        og_story_list = self.story_list().get('data')
+        og_stories = [('','')]
+        for story in og_story_list:
+            og_stories.append((story.get('public_url'),story.get('title')))
+        c.og_stories = og_stories
 
         vars = {'data': data, 'errors': errors,
                 'error_summary': error_summary, 'page': page,
@@ -398,3 +403,18 @@ class PagesController(p.toolkit.BaseController):
         return """<script type='text/javascript'>
                       window.parent.CKEDITOR.tools.callFunction(%s, '%s');
                   </script>""" % (p.toolkit.request.GET['CKEditorFuncNum'], url['url'])
+
+    def _get_entity_id(self):
+        return helpers.config.get('ckanext.opengov.stories.entity_id') or h.config.get('ckanext.opengov.entity_id')
+
+    def _get_endpoint(self):
+        return helpers.config.get('ckanext.opengov.stories.backend') or h.config.get('ckanext.opengov.backend')
+
+    def _get_story_list_url(self, entity_id=None):
+        return '%s/backend/api/stories/v1/public/ckan-list?per_page=100&sort=-publishedAt&entity_id=%s'%(self._get_endpoint(), entity_id or self. _get_entity_id())
+
+    def story_list(self, entity_id=None):
+        url = self._get_story_list_url(entity_id)
+        print url
+        r = requests.get(url)
+        return r.json()

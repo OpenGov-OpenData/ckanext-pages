@@ -44,8 +44,33 @@
     {% set title_placeholder = _('eg. Page Title') %}
 {% endif %}
 
+<!-- Tab links -->
+    <div class="tab">
+       <button class="tablinks" onclick="openTab(event, 'addPage')" id="defaultOpen">{{ _('Page') }}</button>
+       <button class="tablinks" onclick="openTab(event, 'openGov')">{{ _('OpenGov') }}</button>
+     </div>
+
+     <!-- Tab content -->
+     <div id="addPage" class="tabcontent">
+
+     </div>
+
+     <div id="openGov" class="tabcontent">
+
+     </div>
 
 <form class="form-horizontal" method="post" action="{{ action_url }}" data-module="basic-form">
+
+  <div class="control-group" id="story">
+    <label for="field-story" class="control-label text-left">{{ _('Story') }}</label>
+    <div class="controls">
+      <select id="field-story" class="form-control" name="story">
+        {% for option in c.og_stories %}
+        <option value="{{ option[0] }}" >{{ option[1] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
 
   {{ form.input('title', id='field-title', label=_('Title'), placeholder=title_placeholder, value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
 
