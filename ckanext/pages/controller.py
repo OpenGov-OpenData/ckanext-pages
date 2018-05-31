@@ -1,8 +1,10 @@
+import requests
 import ckan.plugins as p
 import ckan.lib.helpers as helpers
 from pylons import config
 
 _ = p.toolkit._
+c = p.toolkit.c
 
 class PagesController(p.toolkit.BaseController):
     controller = 'ckanext.pages.controller:PagesController'
