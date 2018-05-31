@@ -43,3 +43,11 @@
      background-color: #ccc;
  }
 
+ /* Style the tab content */
+ .tabcontent {
+     display: none;
+ }
+.text-left .control-label, .text-left{
+  text-align: left!important;
+}
+
