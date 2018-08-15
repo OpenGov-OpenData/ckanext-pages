@@ -39,7 +39,6 @@
                  <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
               {% endif %}
             </h3>
-            {#
             {% if page.content %}
               {% if editor %}
               <div>
@@ -51,7 +50,6 @@
             {% else %}
               <p class="empty">{{ _('This page currently has no content') }}</p>
             {% endif %}
-            #}
         </div>
       {% else %}
         <div class="span11">
@@ -61,7 +59,6 @@
                <small class="date"> {{ h.render_datetime(page.publish_date) }} </small>
             {% endif %}
           </h3>
-          {#
           {% if page.content %}
             {% if editor %}
             <div>
@@ -73,7 +70,6 @@
           {% else %}
             <p class="empty">{{ _('This page currently has no content') }}</p>
           {% endif %}
-          #}
         </div>
       {% endif %}
       </div>
