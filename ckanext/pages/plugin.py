@@ -9,7 +9,8 @@ import ckan.plugins as p
 import ckan.lib.helpers as h
 import actions
 import auth
-
+import re
+from jinja2 import evalcontextfilter
 if toolkit.check_ckan_version(min_version='2.5'):
     from ckan.lib.plugins import DefaultTranslation
 
@@ -96,6 +97,8 @@ def get_plus_icon():
         return 'plus-square'
     return 'plus-sign-alt'
 
+def remove_elements(page_content):
+    return re.sub(r'(<style.+style>)',r'',page_content)
 
 class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
@@ -132,7 +135,8 @@ class PagesPlugin(PagesPluginBase):
             'render_content': render_content,
             'get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
-            'pages_get_plus_icon': get_plus_icon
+            'pages_get_plus_icon': get_plus_icon,
+            'pages_reomve_elements': remove_elements
         }
 
     def after_map(self, map):

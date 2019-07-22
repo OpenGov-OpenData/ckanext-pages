@@ -62,7 +62,7 @@
           {% if page.content %}
             {% if editor %}
             <div>
-              {{page.content|striptags|truncate}}
+              {{h.pages_reomve_elements(page.content)|striptags|truncate}}
             </div>
             {% else %}
               {{ h.markdown_extract(page.content) }}
