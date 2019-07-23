@@ -98,7 +98,7 @@ def get_plus_icon():
     return 'plus-sign-alt'
 
 def clean_content(page_content):
-    content_cleaned = page_content
+    content_cleaned = page_content.replace('\n', ' ')
     content_cleaned = re.sub(r'(<style.+style>)', r'', content_cleaned)
     content_cleaned = re.sub(r'(<script.+script>)', r'', content_cleaned)
     return content_cleaned
