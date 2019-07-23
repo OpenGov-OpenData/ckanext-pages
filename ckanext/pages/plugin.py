@@ -10,7 +10,7 @@ import ckan.lib.helpers as h
 import actions
 import auth
 import re
-from jinja2 import evalcontextfilter
+
 if toolkit.check_ckan_version(min_version='2.5'):
     from ckan.lib.plugins import DefaultTranslation
 
