@@ -97,8 +97,11 @@ def get_plus_icon():
         return 'plus-square'
     return 'plus-sign-alt'
 
-def remove_elements(page_content):
-    return re.sub(r'(<style.+style>)',r'',page_content)
+def clean_content(page_content):
+    content_cleaned = page_content
+    content_cleaned = re.sub(r'(<style.+style>)', r'', content_cleaned)
+    content_cleaned = re.sub(r'(<script.+script>)', r'', content_cleaned)
+    return content_cleaned
 
 class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
@@ -136,7 +139,7 @@ class PagesPlugin(PagesPluginBase):
             'get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
             'pages_get_plus_icon': get_plus_icon,
-            'pages_reomve_elements': remove_elements
+            'pages_clean_content': clean_content
         }
 
     def after_map(self, map):
