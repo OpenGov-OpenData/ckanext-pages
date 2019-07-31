@@ -99,8 +99,9 @@ def get_plus_icon():
 
 def clean_content(page_content):
     content_cleaned = page_content.replace('\n', ' ')
-    content_cleaned = re.sub(r'(<style.+style>)', r'', content_cleaned)
-    content_cleaned = re.sub(r'(<script.+script>)', r'', content_cleaned)
+    tags = [r'(<style.+style>)', r'(<script.+script>)', r'(<noscript.+noscript>)']
+    for tag in tags:
+        content_cleaned = re.sub(tag, r'', content_cleaned)
     return content_cleaned
 
 class PagesPlugin(PagesPluginBase):
