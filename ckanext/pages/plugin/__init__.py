@@ -1,4 +1,4 @@
-
+import re
 import logging
 try:
     from html import escape as html_escape
@@ -123,6 +123,14 @@ def get_plus_icon():
     return 'plus-sign-alt'
 
 
+def clean_content(page_content):
+    content_cleaned = page_content.replace('\n', ' ')
+    tags = [r'(<style.+style>)', r'(<script.+script>)', r'(<noscript.+noscript>)']
+    for tag in tags:
+        content_cleaned = re.sub(tag, r'', content_cleaned)
+    return content_cleaned
+
+
 class PagesPlugin(PagesPluginBase, MixinPlugin):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
@@ -151,7 +159,8 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
             'render_content': render_content,
             'get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
-            'pages_get_plus_icon': get_plus_icon
+            'pages_get_plus_icon': get_plus_icon,
+            'pages_clean_content': clean_content
         }
 
     def get_actions(self):
