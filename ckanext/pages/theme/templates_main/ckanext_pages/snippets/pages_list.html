@@ -29,7 +29,7 @@
       <div class="row page-list-item dataset-item">
       {% if page.image %}
         <div class="span3 image">
-          <a style="background-image:url({{ page.image }})" href="{{ url }}">
+          <a style="background-image:url({{ page.image }})" aria-label="image" href="{{ url }}">
           </a>
         </div>
         <div class="span8">
@@ -42,7 +42,7 @@
             {% if page.content %}
               {% if editor %}
               <div>
-                {{page.content|striptags|truncate}}
+                {{h.pages_clean_content(page.content)|striptags|truncate}}
               </div>
               {% else %}
                 {{ h.markdown_extract(page.content) }}
@@ -62,7 +62,7 @@
           {% if page.content %}
             {% if editor %}
             <div>
-              {{page.content|striptags|truncate}}
+              {{h.pages_clean_content(page.content)|striptags|truncate}}
             </div>
             {% else %}
               {{ h.markdown_extract(page.content) }}
