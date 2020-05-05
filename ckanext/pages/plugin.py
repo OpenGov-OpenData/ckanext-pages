@@ -10,6 +10,7 @@ import ckan.lib.helpers as h
 import actions
 import auth
 import re
+from ckanext.pages.db import setup as model_setup
 
 if toolkit.check_ckan_version(min_version='2.5'):
     from ckan.lib.plugins import DefaultTranslation
@@ -137,6 +138,8 @@ class PagesPlugin(PagesPluginBase):
         toolkit.add_public_directory(config, 'theme/public')
 
     def configure(self, config):
+        # Setup pages model
+        model_setup()
         return
 
     def get_helpers(self):

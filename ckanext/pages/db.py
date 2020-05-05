@@ -1,3 +1,4 @@
+import logging
 import datetime
 import uuid
 import json
@@ -8,42 +9,56 @@ try:
     from sqlalchemy.engine.result import RowProxy
 except:
     from sqlalchemy.engine.base import RowProxy
+from ckan import model
+
+
+log = logging.getLogger(__name__)
 
 pages_table = None
-Page = None
+
+
+def setup():
+    # setup pages_table
+    if pages_table is None:
+        define_pages_table()
+        log.debug('Pages table defined in memory')
+
+    if not pages_table.exists():
+        init_db()
+        log.debug('Pages table created')
+    else:
+        log.debug('Pages table already exists')
 
 
 def make_uuid():
     return unicode(uuid.uuid4())
 
 
-def init_db(model):
-    class _Page(model.DomainObject):
+class Page(model.DomainObject):
+    @classmethod
+    def get(cls, **kw):
+        '''Finds a single entity in the register.'''
+        query = model.Session.query(cls).autoflush(False)
+        return query.filter_by(**kw).first()
 
-        @classmethod
-        def get(cls, **kw):
-            '''Finds a single entity in the register.'''
-            query = model.Session.query(cls).autoflush(False)
-            return query.filter_by(**kw).first()
+    @classmethod
+    def pages(cls, **kw):
+        '''Finds a single entity in the register.'''
+        order = kw.pop('order', False)
+        order_publish_date = kw.pop('order_publish_date', False)
 
-        @classmethod
-        def pages(cls, **kw):
-            '''Finds a single entity in the register.'''
-            order = kw.pop('order', False)
-            order_publish_date = kw.pop('order_publish_date', False)
+        query = model.Session.query(cls).autoflush(False)
+        query = query.filter_by(**kw)
+        if order:
+            query = query.order_by(sa.cast(cls.order, sa.Integer)).filter(cls.order != '')
+        elif order_publish_date:
+            query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)
+        else:
+            query = query.order_by(cls.created.desc())
+        return query.all()
 
-            query = model.Session.query(cls).autoflush(False)
-            query = query.filter_by(**kw)
-            if order:
-                query = query.order_by(sa.cast(cls.order, sa.Integer)).filter(cls.order != '')
-            elif order_publish_date:
-                query = query.order_by(cls.publish_date.desc()).filter(cls.publish_date != None)
-            else:
-                query = query.order_by(cls.created.desc())
-            return query.all()
 
-    global Page
-    Page = _Page
+def init_db():
     # We will just try to create the table.  If it already exists we get an
     # error but we can just skip it and carry on.
     sql = '''
@@ -93,6 +108,8 @@ def init_db(model):
         pass
     model.Session.commit()
 
+
+def define_pages_table():
     types = sa.types
     global pages_table
     pages_table = sa.Table('ckanext_pages', model.meta.metadata,
