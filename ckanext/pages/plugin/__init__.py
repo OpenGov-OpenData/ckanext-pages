@@ -14,6 +14,7 @@ from ckan.lib.helpers import build_nav_main as core_build_nav_main
 
 from ckanext.pages import actions
 from ckanext.pages import auth
+from ckanext.pages.db import setup as model_setup
 
 if tk.check_ckan_version(min_version='2.5'):
     from ckan.lib.plugins import DefaultTranslation
@@ -133,6 +134,7 @@ def clean_content(page_content):
 
 class PagesPlugin(PagesPluginBase, MixinPlugin):
     p.implements(p.IConfigurer, inherit=True)
+    p.implements(p.IConfigurable, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
     p.implements(p.IActions, inherit=True)
     p.implements(p.IAuthFunctions, inherit=True)
@@ -152,6 +154,11 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
         tk.add_public_directory(config, '../assets/')
         tk.add_public_directory(config, '../assets/vendor/ckeditor/')
         tk.add_public_directory(config, '../assets/vendor/ckeditor/skins/moono-lisa')
+
+    def configure(self, config):
+        # Setup pages model
+        model_setup()
+        return
 
     def get_helpers(self):
         return {

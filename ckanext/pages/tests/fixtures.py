@@ -7,12 +7,11 @@ from ckanext.pages import db
 
 @pytest.fixture
 def pages_setup():
-    if db.pages_table is None:
-        db.init_db(model)
+    db.setup()
 
 
 @pytest.fixture
 def clean_pages():
-    if db.pages_table is not None:
+    if db.pages_table is not None and db.pages_table.exists():
         model.Session.query(db.Page).delete()
         model.Session.commit()
