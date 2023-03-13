@@ -13,10 +13,7 @@ except ImportError:
     from HTMLParser import HTMLParser
 from ckanext.pages.logic.schema import update_pages_schema
 
-try:
-    import ckan.authz as authz
-except ImportError:
-    import ckan.new_authz as authz
+import ckan.authz as authz
 
 from ckanext.pages import db
 
@@ -81,7 +78,7 @@ def _pages_list(context, data_dict):
                   'publish_date': pg.publish_date.isoformat() if pg.publish_date else None,
                   'group_id': pg.group_id,
                   'page_type': pg.page_type,
-                 }
+                  }
         if img:
             pg_row['image'] = img
         extras = pg.extras
@@ -89,6 +86,7 @@ def _pages_list(context, data_dict):
             pg_row.update(json.loads(pg.extras))
         out_list.append(pg_row)
     return out_list
+
 
 def _pages_delete(context, data_dict):
     org_id = data_dict.get('org_id')
@@ -120,8 +118,10 @@ def _pages_update(context, data_dict):
         out.name = page
     items = ['title', 'content', 'name', 'private',
              'order', 'page_type', 'publish_date']
+
+    # backward compatible with older version where page_type does not exist
     for item in items:
-        setattr(out, item, data.get(item,'page' if item =='page_type' else None)) #backward compatible with older version where page_type does not exist
+        setattr(out, item, data.get(item, 'page' if item == 'page_type' else None))
 
     extras = {}
 
@@ -139,28 +139,45 @@ def _pages_update(context, data_dict):
     session.add(out)
     session.commit()
 
+
 def pages_upload(context, data_dict):
+    """ Upload a file to the CKAN server.
+
+    This method implements the logic for file uploads used by CKEditor. For
+    more details on implementation and expected return values see:
+     - https://ckeditor.com/docs/ckeditor4/latest/guide/dev_file_upload.html#server-side-configuration
+
+    """
 
     try:
         p.toolkit.check_access('ckanext_pages_upload', context, data_dict)
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
 
-    if p.toolkit.check_ckan_version(min_version='2.5'):
-        upload = uploader.get_uploader('page_images')
-    else:
-        upload = uploader.Upload('page_images')
+    upload = uploader.get_uploader('page_images')
 
     upload.update_data_dict(data_dict, 'image_url',
                             'upload', 'clear_upload')
-    upload.upload(uploader.get_max_image_size())
+
+    max_image_size = uploader.get_max_image_size()
+
+    try:
+        upload.upload(max_image_size)
+    except p.toolkit.ValidationError:
+        message = (
+            "Can't upload the file, size is too large. "
+            "(Max allowed is {0}mb)".format(max_image_size)
+            )
+        return {'uploaded': 0, 'error': {'message': message}}
+
     image_url = data_dict.get('image_url')
     if image_url and image_url[0:6] not in {'http:/', 'https:'}:
         image_url = h.url_for_static(
-           'uploads/page_images/%s' % image_url,
+            'uploads/page_images/%s' % image_url,
             qualified=True
         )
     return {'url': image_url, 'fileName': upload.filename, 'uploaded': 1}
+
 
 @tk.side_effect_free
 def pages_show(context, data_dict):
@@ -186,6 +203,7 @@ def pages_delete(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_delete(context, data_dict)
 
+
 @tk.side_effect_free
 def pages_list(context, data_dict):
     try:
@@ -193,6 +211,7 @@ def pages_list(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_list(context, data_dict)
+
 
 @tk.side_effect_free
 def org_pages_show(context, data_dict):
@@ -220,6 +239,7 @@ def org_pages_delete(context, data_dict):
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_delete(context, data_dict)
 
+
 @tk.side_effect_free
 def org_pages_list(context, data_dict):
     try:
@@ -227,6 +247,7 @@ def org_pages_list(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_list(context, data_dict)
+
 
 @tk.side_effect_free
 def group_pages_show(context, data_dict):
@@ -253,6 +274,7 @@ def group_pages_delete(context, data_dict):
     except p.toolkit.NotAuthorized:
         p.toolkit.abort(401, p.toolkit._('Not authorized to see this page'))
     return _pages_delete(context, data_dict)
+
 
 @tk.side_effect_free
 def group_pages_list(context, data_dict):

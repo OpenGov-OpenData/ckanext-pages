@@ -3,6 +3,36 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.3.3 (2021-07-20)
+
+## Fixed
+
+- Fix content styles ([1d96e35](https://github.com/ckan/ckanext-pages/commit/1d96e35))
+
+
+## 0.3.2 (2021-07-19)
+
+## Fixed
+
+- Fix predefined styles in CKeditor ([#113](https://github.com/ckan/ckanext-pages/pull/113))
+
+## Added
+
+- Move DB tables initialization to CLI commands ([#112](https://github.com/ckan/ckanext-pages/pull/112))
+- Allow other plugins to customize CKEditor ([#113](https://github.com/ckan/ckanext-pages/pull/113))
+- Add font plugin to CKEditor ([#113](https://github.com/ckan/ckanext-pages/pull/113))
+
+## 0.3.1 (2021-04-07)
+
+## Fixed
+
+- Fix links in blog page ([#111](https://github.com/ckan/ckanext-pages/pull/111))
+
+## Added
+
+- Wrap form fields in blocks for easier extending ([3618dd7](https://github.com/ckan/ckanext-pages/commit/3618dd7))
+
+
 
 ## 0.3.0 (2021-03-05)
 
