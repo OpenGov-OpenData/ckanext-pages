@@ -38,7 +38,7 @@ def pages_list_pages(page_type):
     if page_type == 'blog':
         data_dict['order_publish_date'] = True
     tk.c.pages_dict = tk.get_action('ckanext_pages_list')(
-        data_dict=data_dict
+        context={}, data_dict=data_dict
     )
     tk.c.page = helpers.Page(
         collection=tk.c.pages_dict,
@@ -59,7 +59,7 @@ def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type=
         if page.startswith('/'):
             page = page[1:]
         page_dict = tk.get_action('ckanext_pages_show')(
-            data_dict={'org_id': None, 'page': page}
+            context={}, data_dict={'org_id': None, 'page': page}
         )
     if page_dict is None:
         page_dict = {}
@@ -74,7 +74,7 @@ def pages_edit(page=None, data=None, errors=None, error_summary=None, page_type=
 
         try:
             tk.get_action('ckanext_pages_update')(
-                data_dict=page_dict
+                context={}, data_dict=page_dict
             )
         except tk.ValidationError as e:
             errors = e.error_dict
@@ -143,7 +143,8 @@ def _inject_views_into_page(_page):
             if not height.endswith('%') and not height.endswith('px'):
                 height = height + 'px'
             align = element.attrib.pop('align', 'none')
-            style = "width: %s; height: %s; float: %s; overflow: auto; vertical-align:middle; position:relative" % (width, height, align)
+            style = "width: %s; height: %s; float: %s; overflow: auto; vertical-align:middle; position:relative" \
+                    % (width, height, align)
             element.attrib['style'] = style
             element.attrib['class'] = 'pages-embed'
             view = tk.get_action('resource_view_show')({}, {'id': iframe_src[-36:]})
@@ -160,11 +161,15 @@ def _inject_views_into_page(_page):
             resource_view_html = helpers.rendered_resource_view(view, resource, package)
         else:
             if ckan_29_or_higher:
-                src = helpers.url_for('resource.view', id=package['name'], resource_id=resource['id'], view_id=view['id'], _external=True)
+                src = helpers.url_for('resource.view', id=package['name'],
+                                      resource_id=resource['id'], view_id=view['id'], _external=True)
             else:
-                src = helpers.url_for(qualified=True, controller='package', action='resource_view', id=package['name'], resource_id=resource['id'], view_id=view['id'])
+                src = helpers.url_for(qualified=True, controller='package',
+                                      action='resource_view', id=package['name'],
+                                      resource_id=resource['id'], view_id=view['id'])
             message = _('Your browser does not support iframes.')
-            resource_view_html = '<iframe src="{src}" frameborder="0" width="100%" height="100%" style="display:block"> <p>{message}</p> </iframe>'.format(src=src, message=message)
+            resource_view_html = '<iframe src="{src}" frameborder="0" width="100%" height="100%" ' \
+                                 'style="display:block"> <p>{message}</p> </iframe>'.format(src=src, message=message)
 
         view_element = lxml.html.fromstring(resource_view_html)
         element.append(view_element)
@@ -188,8 +193,9 @@ def pages_show(page=None, page_type='page'):
     if not page:
         return pages_list_pages(page_type)
     _page = tk.get_action('ckanext_pages_show')(
-        data_dict={'org_id': None,
-                   'page': page}
+        context={},
+        data_dict={
+            'org_id': None, 'page': page}
     )
     if _page is None:
         return pages_list_pages(page_type)
@@ -248,10 +254,9 @@ def pages_upload():
         return json.dumps(upload_info)
 
 
-
 def group_list_pages(id, group_type, group_dict=None):
     tk.c.pages_dict = tk.get_action('ckanext_pages_list')(
-        data_dict={'org_id': tk.c.group_dict['id']}
+        context={}, data_dict={'org_id': tk.c.group_dict['id']}
     )
     return tk.render(
         'ckanext_pages/{}_page_list.html'.format(group_type),
@@ -291,8 +296,9 @@ def group_show(id, group_type, page=None):
         return group_list_pages(id, group_type, group_dict)
 
     _page = tk.get_action('ckanext_pages_show')(
-        data_dict={'org_id': tk.c.group_dict['id'],
-                   'page': page}
+        context={},
+        data_dict={
+            'org_id': tk.c.group_dict['id'], 'page': page}
     )
     if _page is None:
         return group_list_pages(id, group_type, group_dict)
@@ -317,7 +323,7 @@ def group_edit(id, group_type, page=None, data=None, errors=None, error_summary=
         if page.startswith('/'):
             page = page[1:]
         page_dict = tk.get_action('ckanext_pages_show')(
-            data_dict={'org_id': tk.c.group_dict['id'], 'page': page}
+            context={}, data_dict={'org_id': tk.c.group_dict['id'], 'page': page}
         )
     if page_dict is None:
         page_dict = {}
@@ -333,7 +339,7 @@ def group_edit(id, group_type, page=None, data=None, errors=None, error_summary=
         page_dict['page'] = page
         try:
             tk.get_action('ckanext_org_pages_update')(
-                data_dict=page_dict
+                context={}, data_dict=page_dict
             )
         except tk.ValidationError as e:
             errors = e.error_dict
@@ -404,3 +410,8 @@ def group_delete(id, group_type, page):
         'ckanext_pages/confirm_delete.html',
         {'page': page, 'group_type': group_type, 'group_dict': group_dict}
     )
+
+
+def initdb():
+    import ckanext.pages.db as db
+    db.init_db()

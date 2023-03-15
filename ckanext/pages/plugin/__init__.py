@@ -12,18 +12,11 @@ import ckantoolkit as tk
 import ckan.plugins as p
 from ckan.lib.helpers import build_nav_main as core_build_nav_main
 
-from ckanext.pages import actions
+from ckanext.pages import actions, db
 from ckanext.pages import auth
-from ckanext.pages.db import setup as model_setup
 
-if tk.check_ckan_version(min_version='2.5'):
-    from ckan.lib.plugins import DefaultTranslation
+from ckan.lib.plugins import DefaultTranslation
 
-    class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
-        p.implements(p.ITranslation, inherit=True)
-else:
-    class PagesPluginBase(p.SingletonPlugin):
-        pass
 
 if tk.check_ckan_version(u'2.9'):
     from ckanext.pages.plugin.flask_plugin import MixinPlugin
@@ -91,11 +84,7 @@ def build_pages_nav_main(*args):
 
 def render_content(content):
     allow_html = tk.asbool(tk.config.get('ckanext.pages.allow_html', False))
-    try:
-        return tk.h.render_markdown(content, allow_html=allow_html)
-    except TypeError:
-        # allow_html is only available in CKAN >= 2.3
-        return tk.h.render_markdown(content)
+    return tk.h.render_markdown(content, allow_html=allow_html)
 
 
 def get_wysiwyg_editor():
@@ -132,12 +121,16 @@ def clean_content(page_content):
     return content_cleaned
 
 
+class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
+    p.implements(p.ITranslation, inherit=True)
+
+
 class PagesPlugin(PagesPluginBase, MixinPlugin):
     p.implements(p.IConfigurer, inherit=True)
-    p.implements(p.IConfigurable, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
     p.implements(p.IActions, inherit=True)
     p.implements(p.IAuthFunctions, inherit=True)
+    p.implements(p.IConfigurable, inherit=True)
 
     def update_config(self, config):
         self.organization_pages = tk.asbool(config.get('ckanext.pages.organization', False))
@@ -154,11 +147,6 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
         tk.add_public_directory(config, '../assets/')
         tk.add_public_directory(config, '../assets/vendor/ckeditor/')
         tk.add_public_directory(config, '../assets/vendor/ckeditor/skins/moono-lisa')
-
-    def configure(self, config):
-        # Setup pages model
-        model_setup()
-        return
 
     def get_helpers(self):
         return {
@@ -212,6 +200,9 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
             'ckanext_group_pages_delete': auth.group_pages_delete,
             'ckanext_group_pages_list': auth.group_pages_list,
         }
+
+    def configure(self, config):
+        db.init_db()
 
 
 class TextBoxView(p.SingletonPlugin):
