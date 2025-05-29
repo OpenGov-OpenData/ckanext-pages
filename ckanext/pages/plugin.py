@@ -1,29 +1,19 @@
 import re
 import logging
-try:
-    from html import escape as html_escape
-except ImportError:
-    from cgi import escape as html_escape
-import six
+from html import escape as html_escape
+
 from six.moves.urllib.parse import quote
 
-import ckantoolkit as tk
+from ckan.plugins import toolkit as tk
 
 import ckan.plugins as p
 from ckan.lib.helpers import build_nav_main as core_build_nav_main
 
-from ckanext.pages import actions, db
+from ckanext.pages import actions
 from ckanext.pages import auth
+from ckanext.pages import blueprint
 
 from ckan.lib.plugins import DefaultTranslation
-
-
-if tk.check_ckan_version(u'2.9'):
-    from ckanext.pages.plugin.flask_plugin import MixinPlugin
-    ckan_29_or_higher = True
-else:
-    from ckanext.pages.plugin.pylons_plugin import MixinPlugin
-    ckan_29_or_higher = False
 
 
 log = logging.getLogger(__name__)
@@ -34,19 +24,15 @@ def build_pages_nav_main(*args):
     about_menu = tk.asbool(tk.config.get('ckanext.pages.about_menu', True))
     group_menu = tk.asbool(tk.config.get('ckanext.pages.group_menu', True))
     org_menu = tk.asbool(tk.config.get('ckanext.pages.organization_menu', True))
-
-    # Different CKAN versions use different route names - gotta catch em all!
-    about_menu_routes = ['about', 'home.about']
-    group_menu_routes = ['group_index', 'home.group_index']
-    org_menu_routes = ['organizations_index', 'home.organizations_index']
+    root_path = tk.config.get('ckan.root_path', '/')
 
     new_args = []
     for arg in args:
-        if arg[0] in about_menu_routes and not about_menu:
+        if arg[0] in 'home.about' and not about_menu:
             continue
-        if arg[0] in org_menu_routes and not org_menu:
+        if arg[0] in 'home.group_index' and not org_menu:
             continue
-        if arg[0] in group_menu_routes and not group_menu:
+        if arg[0] in 'home.organizations_index' and not group_menu:
             continue
         new_args.append(arg)
 
@@ -56,23 +42,16 @@ def build_pages_nav_main(*args):
     pages_list = tk.get_action('ckanext_pages_list')(None, {'order': True, 'private': False})
 
     page_name = ''
-    if ckan_29_or_higher:
-        is_current_page = tk.get_endpoint() in (('pages', 'show'), ('pages', 'blog_show'))
-    else:
-        is_current_page = (
-            hasattr(tk.c, 'action') and tk.c.action in ('pages_show', 'blog_show')
-            and tk.c.controller == 'ckanext.pages.controller:PagesController')
+    is_current_page = tk.get_endpoint() in (('pages', 'show'), ('pages', 'blog_show'))
+
     if is_current_page:
         page_name = tk.request.path.split('/')[-1]
 
     for page in pages_list:
         type_ = 'blog' if page['page_type'] == 'blog' else 'pages'
-        if six.PY2:
-            name = quote(page['name'].encode('utf-8')).decode('utf-8')
-        else:
-            name = quote(page['name'])
+        name = quote(page['name'])
         title = html_escape(page['title'])
-        link = tk.h.literal(u'<a href="/{}/{}">{}</a>'.format(type_, name, title))
+        link = tk.h.literal(u'<a href="{}/{}/{}">{}</a>'.format(root_path, type_, name, title))
         if page['name'] == page_name:
             li = tk.literal('<li class="active">') + link + tk.literal('</li>')
         else:
@@ -125,43 +104,48 @@ class PagesPluginBase(p.SingletonPlugin, DefaultTranslation):
     p.implements(p.ITranslation, inherit=True)
 
 
-class PagesPlugin(PagesPluginBase, MixinPlugin):
+class PagesPlugin(PagesPluginBase):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
     p.implements(p.IActions, inherit=True)
     p.implements(p.IAuthFunctions, inherit=True)
     p.implements(p.IConfigurable, inherit=True)
+    p.implements(p.IBlueprint)
+
+    def get_blueprint(self):
+        return [blueprint.pages]
 
     def update_config(self, config):
         self.organization_pages = tk.asbool(config.get('ckanext.pages.organization', False))
         self.group_pages = tk.asbool(config.get('ckanext.pages.group', False))
 
-        tk.add_template_directory(config, '../theme/templates_main')
+        tk.add_template_directory(config, 'theme/templates_main')
         if self.group_pages:
-            tk.add_template_directory(config, '../theme/templates_group')
+            tk.add_template_directory(config, 'theme/templates_group')
         if self.organization_pages:
-            tk.add_template_directory(config, '../theme/templates_organization')
+            tk.add_template_directory(config, 'theme/templates_organization')
 
-        tk.add_resource('../assets', 'pages')
+        tk.add_resource('assets', 'pages')
 
-        tk.add_public_directory(config, '../assets/')
-        tk.add_public_directory(config, '../assets/vendor/ckeditor/')
-        tk.add_public_directory(config, '../assets/vendor/ckeditor/skins/moono-lisa')
+        tk.add_public_directory(config, 'assets/')
+        tk.add_public_directory(config, 'assets/vendor/ckeditor/')
+        tk.add_public_directory(config, 'assets/vendor/ckeditor/skins/moono-lisa')
 
     def get_helpers(self):
         return {
             'build_nav_main': build_pages_nav_main,
             'render_content': render_content,
-            'get_wysiwyg_editor': get_wysiwyg_editor,
+            'pages_get_wysiwyg_editor': get_wysiwyg_editor,
             'get_recent_blog_posts': get_recent_blog_posts,
             'pages_get_plus_icon': get_plus_icon,
-            'pages_clean_content': clean_content
+            'pages_clean_content': clean_content,
         }
 
     def get_actions(self):
         actions_dict = {
             'ckanext_pages_show': actions.pages_show,
             'ckanext_pages_update': actions.pages_update,
+            'ckanext_pages_revision_restore': actions.pages_revision_restore,
             'ckanext_pages_delete': actions.pages_delete,
             'ckanext_pages_list': actions.pages_list,
             'ckanext_pages_upload': actions.pages_upload,
@@ -200,9 +184,6 @@ class PagesPlugin(PagesPluginBase, MixinPlugin):
             'ckanext_group_pages_delete': auth.group_pages_delete,
             'ckanext_group_pages_list': auth.group_pages_list,
         }
-
-    def configure(self, config):
-        db.init_db()
 
 
 class TextBoxView(p.SingletonPlugin):
