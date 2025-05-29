@@ -72,10 +72,14 @@ jobs:
     - name: Run tests
       run: pytest --ckan-ini=test.ini --cov=ckanext.pages --cov-report=term-missing --cov-append --disable-warnings ckanext/pages/tests
 
+    - name: Install unzip for SonarQube and cov
+      run: apt-get -y install unzip curl
+
     - name: Upload coverage report to codecov
       uses: codecov/codecov-action@v5.4.3
       with:
-        file: ./coverage.xml
+        files: ./coverage.xml
+
     - name: SonarQube Scan
       uses: sonarsource/sonarqube-scan-action@master
       with:

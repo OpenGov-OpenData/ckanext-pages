@@ -24,7 +24,7 @@ def build_pages_nav_main(*args):
     about_menu = tk.asbool(tk.config.get('ckanext.pages.about_menu', True))
     group_menu = tk.asbool(tk.config.get('ckanext.pages.group_menu', True))
     org_menu = tk.asbool(tk.config.get('ckanext.pages.organization_menu', True))
-    root_path = tk.config.get('ckan.root_path', '/')
+    root_path = tk.config.get('ckan.root_path') if tk.config.get('ckan.root_path') else ''
 
     new_args = []
     for arg in args:

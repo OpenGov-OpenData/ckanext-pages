@@ -13,7 +13,7 @@ from ckan.tests import factories, helpers
 
 from ckanext.pages.logic import schema
 
-ckan_29_or_higher = toolkit.check_ckan_version(u'2.9')
+ckan_29_or_higher = toolkit.check_ckan_version('2.9')
 
 
 @pytest.mark.usefixtures("with_plugins", "clean_db")
@@ -152,19 +152,19 @@ class TestPages():
         response = app.post(
             url=toolkit.url_for('pages_edit', page=page),
             params={
-                'title': u'Tïtlé'.encode('utf-8'),
+                'title': 'Tïtlé'.encode('utf-8'),
                 'name': 'page_unicode',
-                'content': u'Çöñtéñt'.encode('utf-8'),
+                'content': 'Çöñtéñt'.encode('utf-8'),
                 'order': 1,
                 'private': False,
             },
             extra_environ=env,
         )
 
-        assert u'<p>Çöñtéñt</p>' in response.get_data(as_text=True)
-        assert u'<title>Tïtlé - CKAN</title>' in response.get_data(as_text=True)
-        assert u'<a href="/pages/page_unicode">Tïtlé</a>' in response.get_data(as_text=True)
-        assert u'<h1 class="page-heading">Tïtlé</h1>' in response.get_data(as_text=True)
+        assert '<p>Çöñtéñt</p>' in response.get_data(as_text=True), response.get_data(as_text=True)
+        assert '<title>Tïtlé - CKAN</title>' in response.get_data(as_text=True), response.get_data(as_text=True)
+        assert '<a href="/pages/page_unicode">Tïtlé</a>' in response.get_data(as_text=True), response.get_data(as_text=True)
+        assert '<h1 class="page-heading">Tïtlé</h1>' in response.get_data(as_text=True), response.get_data(as_text=True)
 
     def test_pages_saves_custom_schema_fields(self, app):
         user = factories.Sysadmin()
