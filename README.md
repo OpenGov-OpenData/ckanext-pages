@@ -8,7 +8,9 @@ This extension gives you an easy way to add simple pages to CKAN.
 
 By default you can add pages to the main CKAN menu.
 
-Tested on CKAN 2.7, 2.8 and 2.9.
+Tested on CKAN 2.9 and 2.10.
+
+Note: For CKAN 2.7 and 2.8 use v0.3.7 or older versions.
 
 ## Installation
 
@@ -31,13 +33,9 @@ You need to initialize database from command line with the following commands:
 
 ON CKAN >= 2.9:
 ```
-(pyenv) $ ckan --config=/etc/ckan/default/ckan.ini pages initdb
+(pyenv) $ ckan --config=/etc/ckan/default/ckan.ini db upgrade -p pages
 ```
 
-ON CKAN <= 2.8:
-```
-(pyenv) $ paster --plugin=ckanext-pages pages initdb --config=/etc/ckan/default/production.ini
-```
 
 ## Configuration
 
@@ -83,6 +81,18 @@ or
 ckanext.pages.editor = ckeditor
 ```
 This enables either the [medium](https://jakiestfu.github.io/Medium.js/docs/) or [ckeditor](http://ckeditor.com/)
+
+```
+ckanext.pages.revisions_limit = 3
+```
+
+By default the value is set to `3` revisions to be stored. While adding this option with a higher number, the amount of stored revisions will be increased.
+
+```
+ckanext.pages.revisions_force_limit = true
+```
+
+By default is set to `False`. Needed when the `ckanext.pages.revisions_limit` number is decresed from the original (e.g. from 5 to 2) and we want to make sure that all Pages after update will have only specified number of Revisions instead of the old setting number. Without it, if Page had previously 5 Revisions, the page will continue to have 5 Revisions as it removes only the last one, so the new number limit will effect only new Pages, while setting this option to `true`, will force old Pages after update to have the spcific amount of last Revisions.
 
 ## Extending ckanext-pages schema
 
